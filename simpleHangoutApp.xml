@@ -65,11 +65,11 @@ function init() {
           var currentLeader = gapi.hangout.data.getValue('leader');
 
           if (currentLeader == null) {
-            gapi.hangout.data.setValue('leader', gapi.hangoutgetLocalParticipantId());
+            gapi.hangout.data.setValue('leader', gapi.hangout.getLocalParticipantId());
 
             currentLeader = gapi.hangout.data.getValue('leader');
 
-            if (currentLeader == gapi.hangoutgetLocalParticipantId()) {
+            if (currentLeader == gapi.hangout.getLocalParticipantId()) {
               leader = true;
             }
           }
