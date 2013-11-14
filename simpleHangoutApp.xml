@@ -64,7 +64,7 @@ function init() {
         if (eventObj.isApiReady) {
           var currentLeader = gapi.hangout.data.getValue('leader');
 
-          if (currentLeader == null) {
+          if (currentLeader == undefined) {
             gapi.hangout.data.setValue('leader', gapi.hangout.getLocalParticipantId());
 
             currentLeader = gapi.hangout.data.getValue('leader');
