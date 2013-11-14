@@ -12,7 +12,7 @@
  * License for the specific language governing permissions and limitations under
  * the License
 -->
-  <ModulePrefs title="Hangout Starter">
+  <ModulePrefs title="Pivotal Tracker on Google Hangouts">
     <Require feature="rpc" />
     <Require feature="views" />
     <Require feature="locked-domain" />
@@ -20,69 +20,39 @@
   <Content type="html"><![CDATA[     
 
 <html>
-<style type="text/css">
-<!--
-.button {
-  border-radius: 3px;
-  -moz-border-radius: 3px;
-  background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ddd));
-  background: -moz-linear-gradient(top, #fff, #ddd);  
-  border: 1px solid #bbb;
-}
-
-.button:active {
-  background: -webkit-gradient(linear, left top, left bottom, from(#aaa), to(#333)); 
-  background: -moz-linear-gradient(bottom, #ddd, #aaa); }
-
--->
-</style>
 <body>
-
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js" ></script>
 <script src="//plus.google.com/hangouts/_/api/v1/hangout.js"></script>
 
-<h3>Simple Hangout App</h3>
+<h3>Pivotal Tracker</h3>
 
-<p>
-<input class="button" type="button" value="Show participants!" id="showParticipants" 
-    style="visibility:hidden;"
-    onClick="showParticipants()"/>
-</p>
+<input type="text" id="tracker-token" />
+<input type="text" id="project-id" />
 
-<div id="participantsDiv"></div>
+<pre id="debug">
 
-<hr>
-
-<p><a href="http://developers.google.com/+/hangouts/getting-started">Read the docs</a> to learn more about developing hangouts!</a></p>
+</pre>
 
 <script>
-function showParticipants() {
-  var participants = gapi.hangout.getParticipants();
-
-  var retVal = '<p>Participants: </p><ul>';
-
-  for (var index in participants) {
-    var participant = participants[index];
-
-    if (!participant.person) {
-      retVal += '<li>A participant not running this app</li>';
-    }
-    retVal += '<li>' + participant.person.displayName + '</li>';
-  }
-
-  retVal += '</ul>';
-
-  var div = document.getElementById('participantsDiv');
-
-  div.innerHTML = retVal;
-}
-
 function init() {
   // When API is ready...                                                         
   gapi.hangout.onApiReady.add(
       function(eventObj) {
         if (eventObj.isApiReady) {
-          document.getElementById('showParticipants')
-            .style.visibility = 'visible';
+          $('#tracker-token').change(function() { 
+            gapi.hangout.data.setValue('token', $(this).text());
+          });
+
+          $('#project-id').change(function() { 
+            var projectId = $(this).text();
+
+            gapi.hangout.data.setValue('project', projectId);
+          
+            $.ajax("https://www.pivotaltracker.com/services/v5/projects/" + projectId, success: function(data, status, xhr) {
+              $('#debug').text(xhr.responseText);
+            })
+          });
+
         }
       });
 }
