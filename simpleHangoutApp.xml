@@ -63,13 +63,10 @@ function init() {
       function(eventObj) {
         if (eventObj.isApiReady) {
 
-          if (gapi.hangout.data.getValue('hasLeader') != true) {
+          if (gapi.hangout.data.getValue('leader') == undefined) {
             gapi.hangout.data.setValue('leader', gapi.hangout.getLocalParticipantId());
-            gapi.hangout.data.setValue('hasLeader');
 
-            var currentLeader = gapi.hangout.data.getValue('leader');
-
-            if (currentLeader == gapi.hangout.getLocalParticipantId()) {
+            if (gapi.hangout.data.getValue('leader') == gapi.hangout.getLocalParticipantId()) {
               leader = true;
             }
           }
