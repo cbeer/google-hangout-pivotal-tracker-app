@@ -48,9 +48,10 @@ function init() {
 
             gapi.hangout.data.setValue('project', projectId);
           
-            $.ajax("https://www.pivotaltracker.com/services/v5/projects/" + projectId, success: function(data, status, xhr) {
+            $.ajax("https://www.pivotaltracker.com/services/v5/projects/" + projectId, { success: function(data, status, xhr) {
               $('#debug').text(xhr.responseText);
-            })
+            }});
+            
           });
 
         }
