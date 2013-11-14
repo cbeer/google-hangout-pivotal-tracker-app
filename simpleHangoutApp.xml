@@ -49,6 +49,9 @@ Project: <input type="text" id="project-id" />
 
 
 <script>
+
+var projectData;
+
 function init() {
   // When API is ready...                                                         
   gapi.hangout.onApiReady.add(
@@ -66,7 +69,7 @@ function init() {
             gapi.hangout.data.setValue('projectId', projectId);
           
             $.ajax("https://www.pivotaltracker.com/services/v5/projects/" + projectId, { success: function(data, status, xhr) {
-              gapi.hangout.data.setValue('project', data);
+              gapi.hangout.data.setValue('project', JSON.stringify(data));
               $('#debug').text(xhr.responseText);
             }});
 
@@ -88,7 +91,9 @@ function init() {
 function updateProjectDisplay() {
   $('#project').show();
 
-  $('#project-title').html(gapi.hangout.data.getValue('project')['profile_content']);
+  projectData = jQuery.parseJSON(gapi.hangout.data.getValue('project'));
+
+  $('#project-title').html(projectData['profile_content']);
 }
 
 // Wait for gadget to load.                                                       
