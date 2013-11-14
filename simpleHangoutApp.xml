@@ -34,6 +34,10 @@ Project: <input type="text" id="project-id" />
 <div id="project">
   <h1 id="project-title"></h1>
 
+  <div id="iteration">
+
+  </div>
+
 </div>
 
 <h2>Debug</h2>
@@ -51,36 +55,66 @@ Project: <input type="text" id="project-id" />
 <script>
 
 var projectData;
+var leader;
 
 function init() {
   // When API is ready...                                                         
   gapi.hangout.onApiReady.add(
       function(eventObj) {
         if (eventObj.isApiReady) {
-          $('#tracker-token').change(function() { 
-            gapi.hangout.data.setValue('token', $(this).val());
-          });
+          var currentLeader = gapi.hangout.data.getValue('leader');
 
-          $('#project-id').change(function() { 
-            $('#config').hide();
+          if (currentLeader == null) {
+            gapi.hangout.data.setValue('leader', gapi.hangoutgetLocalParticipantId());
 
-            var projectId = $(this).val();
+            currentLeader = gapi.hangout.data.getValue('leader');
 
-            gapi.hangout.data.setValue('projectId', projectId);
+            if (currentLeader == gapi.hangoutgetLocalParticipantId()) {
+              leader = true;
+            }
+          }
+
+          if (leader) {
           
-            $.ajax("https://www.pivotaltracker.com/services/v5/projects/" + projectId, { success: function(data, status, xhr) {
-              gapi.hangout.data.setValue('project', JSON.stringify(data));
-              $('#debug').text(xhr.responseText);
-            }});
+            $('#tracker-token').change(function() { 
 
-          });
+            });
+
+            $('#project-id').change(function() { 
+              $('#config').hide();
+
+              var projectId = $(this).val();
+
+              gapi.hangout.data.setValue('projectId', projectId);
+
+            
+              $.ajax("https://www.pivotaltracker.com/services/v5/projects/" + projectId, { success: function(data, status, xhr) {
+                gapi.hangout.data.setValue('project', JSON.stringify(data));
+              }});
+
+              $.ajax("https://www.pivotaltracker.com/services/v5/projects/" + projectId + "/iterations?scope=current", { success: function(data, status, xhr) {
+                gapi.hangout.data.setValue('iteration', JSON.stringify(data));
+              }});
+
+
+            });
+            } else {
+              $('#config').hide();
+            }
 
         }
 
         gapi.hangout.data.onStateChanged.add(function(e) {
 
           if ($.inArray('project', e['addedKeys'])) {
-            updateProjectDisplay();
+            projectData = jQuery.parseJSON(gapi.hangout.data.getValue('project'));
+            updateProjectDisplay(projectData);
+            $('#debug-state').text(xhr.responseText);
+          }
+
+          if ($.inArray('iteration', e['addedKeys'])) {
+            var iteration = jQuery.parseJSON(gapi.hangout.data.getValue('iteration'));
+            updateIterationDisplay(iteration);
             $('#debug-state').text(xhr.responseText);
           }
 
@@ -88,14 +122,17 @@ function init() {
       });
 }
 
-function updateProjectDisplay() {
+function updateProjectDisplay(data) {
   $('#project').show();
-
-  projectData = jQuery.parseJSON(gapi.hangout.data.getValue('project'));
-
-  $('#project-title').html(projectData['profile_content']);
+  $('#project-title').html(data['profile_content']);
 }
 
+
+function updateIterationDisplay(iteration) {
+  $('#iteration').show();
+
+  $('#iteration').text(iteration);
+}
 // Wait for gadget to load.                                                       
 gadgets.util.registerOnLoadHandler(init);
 </script>
