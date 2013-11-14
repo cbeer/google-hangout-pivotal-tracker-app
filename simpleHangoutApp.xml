@@ -46,7 +46,7 @@ Project: <input type="text" id="project-id" />
 </pre>
 
 
-<h2>State<h2>
+<h2>State</h2>
 <pre id="debug-state">
 
 </pre>
@@ -109,13 +109,11 @@ function init() {
           if ($.inArray('project', e['addedKeys'])) {
             projectData = jQuery.parseJSON(gapi.hangout.data.getValue('project'));
             updateProjectDisplay(projectData);
-            $('#debug-state').text(xhr.responseText);
           }
 
           if ($.inArray('iteration', e['addedKeys'])) {
             var iteration = jQuery.parseJSON(gapi.hangout.data.getValue('iteration'));
             updateIterationDisplay(iteration);
-            $('#debug-state').text(xhr.responseText);
           }
 
         });
