@@ -55,19 +55,19 @@ Project: <input type="text" id="project-id" />
 <script>
 
 var projectData;
-var leader;
+var leader = true;
 
 function init() {
   // When API is ready...                                                         
   gapi.hangout.onApiReady.add(
       function(eventObj) {
         if (eventObj.isApiReady) {
-          var currentLeader = gapi.hangout.data.getValue('leader');
 
-          if (currentLeader == undefined) {
+          if (gapi.hangout.data.getValue('hasLeader') != true) {
             gapi.hangout.data.setValue('leader', gapi.hangout.getLocalParticipantId());
+            gapi.hangout.data.setValue('hasLeader');
 
-            currentLeader = gapi.hangout.data.getValue('leader');
+            var currentLeader = gapi.hangout.data.getValue('leader');
 
             if (currentLeader == gapi.hangout.getLocalParticipantId()) {
               leader = true;
