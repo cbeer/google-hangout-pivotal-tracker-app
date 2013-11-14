@@ -26,12 +26,27 @@
 
 <h3>Pivotal Tracker</h3>
 
+<div id="config">
 Token: <input type="text" id="tracker-token" />
 Project: <input type="text" id="project-id" />
+</div>
 
+<div id="project">
+  <h1 id="project-title"></h1>
+
+</div>
+
+<h2>Debug</h2>
 <pre id="debug">
 
 </pre>
+
+
+<h2>State<h2>
+<pre id="debug-state">
+
+</pre>
+
 
 <script>
 function init() {
@@ -40,22 +55,40 @@ function init() {
       function(eventObj) {
         if (eventObj.isApiReady) {
           $('#tracker-token').change(function() { 
-            gapi.hangout.data.setValue('token', $(this).text());
+            gapi.hangout.data.setValue('token', $(this).val());
           });
 
           $('#project-id').change(function() { 
-            var projectId = $(this).text();
+            $('#config').hide();
 
-            gapi.hangout.data.setValue('project', projectId);
+            var projectId = $(this).val();
+
+            gapi.hangout.data.setValue('projectId', projectId);
           
             $.ajax("https://www.pivotaltracker.com/services/v5/projects/" + projectId, { success: function(data, status, xhr) {
+              gapi.hangout.data.setValue('project', data);
               $('#debug').text(xhr.responseText);
             }});
-            
+
           });
 
         }
+
+        gapi.hangout.data.onStateChanged.add(function(e) {
+
+          if ($.inArray('project', e['addedKeys'])) {
+            updateProjectDisplay();
+            $('#debug-state').text(xhr.responseText);
+          }
+
+        });
       });
+}
+
+function updateProjectDisplay() {
+  $('#project').show();
+
+  $('#project-title').html(gapi.hangout.data.getValue('project')['profile_content']);
 }
 
 // Wait for gadget to load.                                                       
